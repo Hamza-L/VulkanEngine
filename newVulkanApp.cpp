@@ -93,14 +93,14 @@ namespace hva{
         //std::cout<<uboVP.M[0][0]<<","<<uboVP.M[1][1]<<","<<uboVP.M[2][2]<<","<<uboVP.M[3][3]<<std::endl;
 
         Node test;
-        Cube rect1 = Cube(glm::vec3(1.0f,0.5f,0.0f));
+        Cube rect1 = Cube(glm::vec3(1.0f,0.4f,0.0f));
         Cube cube1;
         Icosahedron sphere(10,glm::vec3(1.0f,0.5f,0.0f));
         Plane p1;
 
         test.addChild(rect1);
-        for (int i=0; i<2; i++){
-            //test = subdivideNode(test);
+        for (int i=0; i<0; i++){
+            test = subdivideNode(test);
         }
 
         std::string var;
@@ -110,7 +110,7 @@ namespace hva{
         //std::cout<<"the number of vertices is: "<<sphere.getVert().size()<<std::endl;
         //std::cout<<"the number of indices is: "<<sphere.getInd().size()<<std::endl;
 
-        modelList.push_back(std::move(std::make_unique<VulkanModel>(device, cube1.getVert(), cube1.getInd() , device.graphicsQueue(), device.getCommandPool(), createTexture("tiles.jpg","tilesUV.jpg"))));
+        modelList.push_back(std::move(std::make_unique<VulkanModel>(device, test.getVert(), test.getInd() , device.graphicsQueue(), device.getCommandPool(), createTexture("tiles.jpg","tilesUV.jpg"))));
         modelList.push_back(std::move(std::make_unique<VulkanModel>(device, sphere.getVert(), sphere.getInd() , device.graphicsQueue(), device.getCommandPool(), createTexture("test.jpg",""))));
 
         //cube1.transform(glm::mat4(1.2f));
@@ -141,9 +141,11 @@ namespace hva{
         tempNode.addChild(node3);
         tempNode.addChild(node4);
 
+        M =  glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,-0.5f));
+        tempNode.transform(M);
         outNode.addChild(tempNode);
 
-        M =  glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,-1.0f));
+        M =  glm::translate(glm::mat4(1.0f), glm::vec3(0.0f,0.0f,1.0f));
         tempNode.transform(M);
         outNode.addChild(tempNode);
 
@@ -556,10 +558,10 @@ namespace hva{
         glfwGetCursorPos(vulkanWindow.getWindow(),&xPos,&yPos);
         xPos/=vulkanSwapChain->getSwapChainExtent().width;
         yPos/=vulkanSwapChain->getSwapChainExtent().height;
-        xPos = (xPos*4)-1;
-        yPos = -(yPos*4)+1;
+        xPos = (xPos*2)-1;
+        yPos = -(yPos*2)+1;
 
-        uboVP.lightPos = glm::vec4((float)xPos*10.0f,(float)yPos*10.0f,3.2f,1.0f);
+        uboVP.lightPos = glm::vec4((float)xPos*2.0f,(float)yPos*2.0f,3.2f,1.0f);
 
         float increment =1.0f;
         if (COM){
@@ -733,7 +735,6 @@ namespace hva{
 
         //norms
         if(!norm.empty()) {
-            std::cout<<"hello"<<std::endl;
             stbi_uc *imageDataNorm = loadTextureFile(norm, &width, &height, &imageSize);
 
             VkBuffer normImageStagingBuffer;
